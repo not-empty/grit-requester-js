@@ -1,0 +1,35 @@
+{
+  "name": "grit-requester-js",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "npm run test:unit && npm run test:feature",
+    "test:unit": "jest --config jest.unit.config.js",
+    "test:feature": "jest --config jest.feature.config.js",
+    "coverage": "npm run coverage:unit && npm run coverage:feature",
+    "coverage:unit": "jest --config jest.unit.config.js --coverage",
+    "coverage:feature": "jest --config jest.feature.config.js --coverage"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.2",
+    "@typescript-eslint/parser": "^6.13.2",
+    "eslint": "^8.55.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-import-resolver-typescript": "^4.3.2",
+    "eslint-plugin-import": "^2.29.0",
+    "jest": "^30.0.2",
+    "msw": "^2.10.2",
+    "ts-jest": "^29.4.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "axios": "^1.10.0"
+  }
+}

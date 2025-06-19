@@ -1,0 +1,30 @@
+# Node modules
+node_modules/
+
+# Build output
+dist/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Mac/Linux
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Env files (se usar)
+.env
+.env.*
+
+# Test coverage
+coverage/
+
+# Optional: pacote gerado por `npm pack`
+*.tgz
