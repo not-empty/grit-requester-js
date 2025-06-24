@@ -60,8 +60,18 @@ export class GritDomainRequester<T, Add = AddDefault<T>, Edit = EditDefault<T>> 
   }
 
   public async bulkAdd(payload: Add[]): Promise<BulkAddResult> {
-    const result = await this.requester.client.post<BulkAddResult>(`/${this.domain}/bulk_add`, payload);
-    return result.data;
+    const chunkSize = 25;
+    const results: BulkAddResult = {
+      ids: [],
+    };
+
+    for (let i = 0; i < payload.length; i += chunkSize) {
+      const chunk = payload.slice(i, i + chunkSize);
+      const result = await this.requester.client.post(`/${this.domain}/bulk_add`, chunk);
+      results.ids.push(...result.data.ids);
+    }
+
+    return results;
   }
 
   public async deadDetail(id: string): Promise<T | null> {
@@ -128,7 +138,7 @@ export class GritDomainRequester<T, Add = AddDefault<T>, Edit = EditDefault<T>> 
     filters,
     order,
     cursor,
-  }: ListPayload<T>): Promise<ListResult<T>> {
+  }: ListPayload<T> = {}): Promise<ListResult<T>> {
     const query = prepareQuery({
       filters,
       order,
@@ -171,7 +181,7 @@ export class GritDomainRequester<T, Add = AddDefault<T>, Edit = EditDefault<T>> 
   public async listOne({
     filters,
     order,
-  }: ListOnePayload<T>): Promise<T | null> {
+  }: ListOnePayload<T> = {}): Promise<T | null> {
     try {
       const query = prepareQuery({
         filters,
