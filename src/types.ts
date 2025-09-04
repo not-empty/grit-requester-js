@@ -55,6 +55,7 @@ export interface EditPayload<T, Edit = EditDefault<T>> {
 
 export interface BulkPayload {
   ids: string[];
+  cursor?: string;
 }
 
 export interface GritRequestPayload<T> {
