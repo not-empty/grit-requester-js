@@ -30,9 +30,15 @@ export class GritDomainRequester<T, Add = AddDefault<T>, Edit = EditDefault<T>> 
 
   public async bulk({
     ids,
+    cursor,
   }: BulkPayload): Promise<ListResult<T>> {
+    const query = prepareQuery({
+      convertToSnakeCase: this.requester.converToSnakeCase,
+      cursor,
+    });
+
     const result = await this.requester.client.post<T[]>(
-      `/${this.domain}/bulk`,
+      `/${this.domain}/bulk?${query}`,
       {
         ids,
       },

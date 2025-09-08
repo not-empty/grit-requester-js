@@ -8,8 +8,6 @@ interface IUser {
   name: string;
 }
 
-const users: IUser[] = [];
-
 const server = setupServer(
   http.post("http://api.grit/auth/generate", async ({ request }) => {
     const body = await request.json() as { token: string, secret: string };
@@ -43,7 +41,12 @@ const server = setupServer(
   }),
   http.post("http://api.grit/user/bulk",async ({ request }) => {
     const body = await request.json() as { ids: string[] };
-    return HttpResponse.json(body.ids.map((id) => ({ id, name: `example ${id}` })));
+    const url = new URL(request.url);
+    const cursor = url.searchParams.get("page_cursor");
+
+    return HttpResponse.json(body.ids.map((id) => ({ id, name: `example ${id}` })), {
+      headers: cursor ? { 'x-page-cursor': cursor } : {}
+    });
   }),
   http.get("http://api.grit/user/detail/:id", ({ params }) => {
     if (params.id === '1') {
@@ -140,6 +143,16 @@ describe("domain", () => {
 
   it("bulk", async () => {
     const users = await ms.domain<IUser>('user').bulk({ ids: ['1', '2', '3'] });
+
+    expect(users.data.length).toEqual(3);
+    expect(users.data[2].name).toEqual('example 3');
+  });
+
+  it("bulk with cursor", async () => {
+    const users = await ms.domain<IUser>('user').bulk({ 
+      ids: ['1', '2', '3'], 
+      cursor: 'test-cursor' 
+    });
 
     expect(users.data.length).toEqual(3);
     expect(users.data[2].name).toEqual('example 3');
