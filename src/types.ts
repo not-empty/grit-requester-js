@@ -7,6 +7,9 @@ export interface BaseEntity {
   deletedAt: Date,
 }
 
+export type StringKeys<T> = Extract<keyof T, string>;
+export type FieldKeys<T> = StringKeys<T> | StringKeys<BaseEntity>;
+
 export enum FilterType {
   FILTER_EQUAL = 'eql',
   FILTER_GREATER_THAN = 'gt',
@@ -36,6 +39,7 @@ export interface ListPayload<T> {
   filters?: Filter<T>[];
   order?: OrderBy<T>;
   cursor?: string;
+  fields?: FieldKeys<T>[];
 }
 
 export interface ListResult<T> {
@@ -46,6 +50,7 @@ export interface ListResult<T> {
 export interface ListOnePayload<T> {
   filters?: Filter<T>[];
   order?: OrderBy<T>;
+  fields?: FieldKeys<T>[];
 }
 
 export interface EditPayload<T, Edit = EditDefault<T>> {
@@ -53,9 +58,10 @@ export interface EditPayload<T, Edit = EditDefault<T>> {
   data: Edit;
 }
 
-export interface BulkPayload {
+export interface BulkPayload<T> {
   ids: string[];
   cursor?: string;
+  fields?: FieldKeys<T>[];
 }
 
 export interface GritRequestPayload<T> {
