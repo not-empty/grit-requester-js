@@ -17,7 +17,7 @@ Features:
 ## ✨ Installation
 
 ```bash
-npm install "https://github.com/not-empty/grit-requester-js/releases/download/v1.0.0/grit-requester-js-1.0.0.tgz"
+npm install "https://github.com/not-empty/grit-requester-js/releases/download/v1.0.2/grit-requester-js-1.0.2.tgz"
 ```
 
 ---
