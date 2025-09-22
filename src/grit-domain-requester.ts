@@ -1,6 +1,16 @@
 
 import axios from 'axios';
-import { AddDefault, AddResult, BulkAddResult, BulkPayload, EditDefault, EditPayload, GritRequestPayload, ListOnePayload, ListPayload, ListResult } from './types';
+import {
+  AddDefault,
+  AddResult,
+  BulkAddResult,
+  BulkPayload,
+  EditDefault,
+  EditPayload,
+  ListOnePayload,
+  ListPayload,
+  ListResult,
+} from './types';
 import { prepareQuery } from './query';
 import { GritRequester } from './grit-requester';
 
@@ -31,10 +41,12 @@ export class GritDomainRequester<T, Add = AddDefault<T>, Edit = EditDefault<T>> 
   public async bulk({
     ids,
     cursor,
-  }: BulkPayload): Promise<ListResult<T>> {
+    fields,
+  }: BulkPayload<T>): Promise<ListResult<T>> {
     const query = prepareQuery({
       convertToSnakeCase: this.requester.converToSnakeCase,
       cursor,
+      fields,
     });
 
     const result = await this.requester.client.post<T[]>(
@@ -52,7 +64,7 @@ export class GritDomainRequester<T, Add = AddDefault<T>, Edit = EditDefault<T>> 
 
   public async bulkAll({
     ids,
-  }: BulkPayload): Promise<T[]> {
+  }: BulkPayload<T>): Promise<T[]> {
     const results : T[] = [];
     const size = 25;
 
@@ -92,16 +104,10 @@ export class GritDomainRequester<T, Add = AddDefault<T>, Edit = EditDefault<T>> 
     }
   }
 
-  public async deadList({
-    filters,
-    order,
-    cursor,
-  }: ListPayload<T>): Promise<ListResult<T>> {
+  public async deadList(payload: ListPayload<T>): Promise<ListResult<T>> {
     const query = prepareQuery({
-      filters,
-      order,
       convertToSnakeCase: this.requester.converToSnakeCase,
-      cursor,
+      ...payload,
     });
 
     const result = await this.requester.client.get<T[]>(
@@ -140,16 +146,10 @@ export class GritDomainRequester<T, Add = AddDefault<T>, Edit = EditDefault<T>> 
     );
   }
 
-  public async list({
-    filters,
-    order,
-    cursor,
-  }: ListPayload<T> = {}): Promise<ListResult<T>> {
+  public async list(payload: ListPayload<T> = {}): Promise<ListResult<T>> {
     const query = prepareQuery({
-      filters,
-      order,
       convertToSnakeCase: this.requester.converToSnakeCase,
-      cursor,
+      ...payload,
     });
 
     const result = await this.requester.client.get<T[]>(
@@ -165,13 +165,14 @@ export class GritDomainRequester<T, Add = AddDefault<T>, Edit = EditDefault<T>> 
   public async listAll({
     filters,
     order,
-    cursor: initialCursor
+    cursor: initialCursor,
+    fields,
   }: Partial<ListPayload<T>> = {}): Promise<T[]> {
     const data: T[] = [];
     let cursor: string | undefined = initialCursor || undefined;
 
     do {
-      const res = await this.list({ filters, order, cursor });
+      const res = await this.list({ filters, order, cursor, fields });
       data.push(...res.data);
 
       if (cursor === res.cursor) {
@@ -187,12 +188,14 @@ export class GritDomainRequester<T, Add = AddDefault<T>, Edit = EditDefault<T>> 
   public async listOne({
     filters,
     order,
+    fields,
   }: ListOnePayload<T> = {}): Promise<T | null> {
     try {
       const query = prepareQuery({
         filters,
         order,
         convertToSnakeCase: this.requester.converToSnakeCase,
+        fields,
       });
 
       const result = await this.requester.client.get<T>(`/${this.domain}/list_one?${query}`);
